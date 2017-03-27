@@ -15,37 +15,44 @@ function preload() {
    //  game.stage._bgColor.rgba = '#3498db';
 
     game.load.crossOrigin = 'anonymous';
-    game.load.tilemap('tilemap', "../game_assets/new_tile_map.json", null, Phaser.Tilemap.TILED_JSON)
+    game.load.tilemap('tilemap', "../game_assets/tile_map_w_objects.json", null, Phaser.Tilemap.TILED_JSON)
     game.load.image('tiles', "../images/Tiles_32x32.png")
 
    //  game.load.image('p', './images/Megaman_retro_3D_by_cezkid.png');
    //  game.load.image('platform', 'sprites/platform.png');
 
 }
-console.log(game)
 function update () {
-   console.log(game)
    game.physics.arcade.collide(p, layer);
 
-p.body.velocity.x = 0;
+   p.body.velocity.x = 0;
 
-if (cursors.left.isDown)
-{
+   if (cursors.left.isDown)
+   {
+
      p.body.velocity.x = -500;
-}
+   }
 else if (cursors.right.isDown)
 {
+
      p.body.velocity.x = 500;
 }
 
 if (cursors.up.isDown && (p.body.onFloor() || p.body.touching.down) ||jumpButton.isDown && (p.body.onFloor() || p.body.touching.down))
 {
+
      p.body.velocity.y = -500;
 }
 if(cursors.down.isDown){
    p.body.velocity.y = 500;
+   console.log(p.body.position)
+
+}
+if(p.body.position.y === 608){
+   console.log('on the ground')
 }
 }
+
 function create() {
    game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -57,6 +64,9 @@ function create() {
    layer = map.createLayer("Tile_layer");
    //  This isn't totally accurate, but it'll do for now
    map.setCollisionBetween(0 , 5);
+   map.setTileIndexCallback(46, hitCoin, this);
+
+   // map.setCollisionBetween(43,46)
 
 //  Un-comment this on to see the collision tiles
    // map.setCollision(40);
@@ -74,7 +84,7 @@ function create() {
 
 
     p.body.collideWorldBounds = true;
-    p.body.gravity.y = 200;
+    p.body.gravity.y = 1000;
     p.height = 32;
     p.width = 32;
     game.camera.follow(p);
@@ -83,12 +93,21 @@ function create() {
    //  platforms.create(-200, 300, 'platform');
    //  platforms.create(400, 450, 'platform');
    //  platforms.create(100, 200, 'platform');
-
+   console.log(game.state)
 
 
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
+
+}
+function hitCoin(sprite, tile) {
+
+    tile.alpha = 0.2;
+
+    layer.dirty = true;
+
+    return false;
 
 }
 
