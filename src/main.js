@@ -9,101 +9,105 @@ var p;
 var cursors;
 var platforms;
 var jumpButton;
-function preload() {
-       game.load.spritesheet('luigi', './images/luigi_right_swim.png', 15, 15, 4);
+var scoreView = document.querySelector("#score");
+var healthView = document.querySelector("#health");
+var timeView = document.querySelector('#time')
+var score = 0;
+var health = 100;
+var time = 10
+var text;
+var level_one ={
+   create: function(){
+      var changeTime = setInterval(function(){
+         time -= 1
+         timeView.innerHTML = time
+         if(time === 0){
+            console.log(window)
+            clearInterval(changeTime)
+         }
+      }, 1000)
+      game.physics.startSystem(Phaser.Physics.ARCADE);
+      var style = { font: "20px VT323", fill: "#fff", tabs: 132 };
 
-   //  game.stage._bgColor.rgba = '#3498db';
+      map = game.add.tilemap('tilemap')
+      map.addTilesetImage("Tiles_32x32", 'tiles');
 
-    game.load.crossOrigin = 'anonymous';
-    game.load.tilemap('tilemap', "../game_assets/tile_map_w_objects.json", null, Phaser.Tilemap.TILED_JSON)
-    game.load.image('tiles', "../images/Tiles_32x32.png")
+      layer = map.createLayer("Tile_layer");
 
-   //  game.load.image('p', './images/Megaman_retro_3D_by_cezkid.png');
-   //  game.load.image('platform', 'sprites/platform.png');
+      map.setCollisionBetween(0 , 5);
+      map.setTileIndexCallback(51, hitCoin, this);
+      layer.resizeWorld();
+       p = game.add.sprite(0, -200, 'luigi');
+       var walk = p.animations.add('swim');
+       p.animations.play('swimn', 20, true);
 
-}
-function update () {
-   game.physics.arcade.collide(p, layer);
+       game.physics.arcade.enable(p);
 
-   p.body.velocity.x = 0;
 
-   if (cursors.left.isDown)
-   {
+       p.body.collideWorldBounds = true;
+       p.body.gravity.y = 1000;
+       p.height = 32;
+       p.width = 32;
+       game.camera.follow(p);
 
-     p.body.velocity.x = -500;
+
+       cursors = game.input.keyboard.createCursorKeys();
+       jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+   },
+   preload: function(){
+      game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
+      game.load.spritesheet('luigi', './images/luigi_right_swim.png', 15, 15, 4);
+
+      game.stage._bgColor.rgba = '#3498db';
+
+      game.load.crossOrigin = 'anonymous';
+      game.load.tilemap('tilemap', "../game_assets/tile_map_w_objects.json", null, Phaser.Tilemap.TILED_JSON)
+      game.load.image('tiles', "../images/Tiles_32x32.png")
+
+   },
+   update: function(){
+
+         game.physics.arcade.collide(p, layer);
+
+         p.body.velocity.x = 0;
+
+         if (cursors.left.isDown && p.body.onFloor())
+         {
+            p.body.velocity.x = -500;
+
+         }
+         else if (cursors.right.isDown)
+         {
+
+              p.body.velocity.x = 500;
+         }
+
+         if (cursors.up.isDown && (p.body.onFloor() || p.body.touching.down) ||jumpButton.isDown && (p.body.onFloor() || p.body.touching.down))
+         {
+
+              p.body.velocity.y = -500;
+         }
+         if(cursors.down.isDown){
+            p.body.velocity.y = 500;
+            console.log(p.body.position)
+
+         }
+         if(p.body.position.y === 608){
+            health = 0
+            healthView.innerHTML = health
+            game.state.stop()
+
+         }
    }
-else if (cursors.right.isDown)
-{
-
-     p.body.velocity.x = 500;
 }
 
-if (cursors.up.isDown && (p.body.onFloor() || p.body.touching.down) ||jumpButton.isDown && (p.body.onFloor() || p.body.touching.down))
-{
-
-     p.body.velocity.y = -500;
-}
-if(cursors.down.isDown){
-   p.body.velocity.y = 500;
-   console.log(p.body.position)
-
-}
-if(p.body.position.y === 608){
-   console.log('on the ground')
-}
-}
-
-function create() {
-   game.physics.startSystem(Phaser.Physics.ARCADE);
-
-   game.stage.backlayerColor = '#fff';
-   map = game.add.tilemap('tilemap')
-   map.addTilesetImage("Tiles_32x32", 'tiles');
-   //  Creates a layer from the World1 layer in the map data.
-   //  A Layer is effectively like a Phaser.Sprite, so is added to the display list.
-   layer = map.createLayer("Tile_layer");
-   //  This isn't totally accurate, but it'll do for now
-   map.setCollisionBetween(0 , 5);
-   map.setTileIndexCallback(46, hitCoin, this);
-
-   // map.setCollisionBetween(43,46)
-
-//  Un-comment this on to see the collision tiles
-   // map.setCollision(40);
-   //  This resizes the game world to match the layer dimensions
-   layer.resizeWorld();
-    p = game.add.sprite(300, 200, 'luigi');
-   //  game.world.setBounds(0, 0, 1920, 1920);
-    var walk = p.animations.add('swim');
-    p.animations.play('swimn', 20, true);
-
-
-   // console.log(game)
-
-    game.physics.arcade.enable(p);
-
-
-    p.body.collideWorldBounds = true;
-    p.body.gravity.y = 1000;
-    p.height = 32;
-    p.width = 32;
-    game.camera.follow(p);
-
-   //  platforms.create(500, 150, 'platform');
-   //  platforms.create(-200, 300, 'platform');
-   //  platforms.create(400, 450, 'platform');
-   //  platforms.create(100, 200, 'platform');
-   console.log(game.state)
-
-
-    cursors = game.input.keyboard.createCursorKeys();
-    jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-
-}
 function hitCoin(sprite, tile) {
+   if(tile.alpha !== 0){
+      scoreView.innerHTML = score += 1
 
-    tile.alpha = 0.2;
+   }
+    tile.alpha = 0;
 
     layer.dirty = true;
 
@@ -111,4 +115,7 @@ function hitCoin(sprite, tile) {
 
 }
 
-const game = new Phaser.Game(640, 640, Phaser.CANVAS, 'app-container', { create: create, preload, update});
+const game = new Phaser.Game(640, 640, Phaser.CANVAS, 'app-container');
+game.state.add('main', level_one)
+
+game.state.start('main')

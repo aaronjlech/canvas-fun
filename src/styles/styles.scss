@@ -1,4 +1,25 @@
-h1{
-   color: blue;
+body{
+   font-family: "VT323", serif;
+
+}
+   h1{
+   color: #f1c40f;
+   text-shadow: 2px 2px #ff0000;
+   font-size: 100px;
+   text-align: center;
+}
+canvas{
+   margin: 0 auto;
+}
+#app-container{
+   position: relative;
+   .game-info{
+      position: absolute;
+      top: 0;
+      right: 0;
+      color: #f1c40f;
+      text-shadow: 2px 2px #ff0000;
+      font-size: 40px;
+   }
 
 }
